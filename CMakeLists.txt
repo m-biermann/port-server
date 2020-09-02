@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.16)
-project(portServer)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -9,15 +8,21 @@ else()
     add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
 
-include_directories(include)
+add_library(portServer src/construction/AppBuilder.cpp src/construction/AppBuilder.h src/TcpAcceptor.h src/TcpAcceptor.cpp src/main.cpp)
 
-add_library(portServer include/mabiphmo/portServer/construction/IAppBuilder.h src/construction/AppBuilder.cpp src/construction/AppBuilder.h include/mabiphmo/portServer/handler/ITcpHandler.h src/TcpAcceptor.h src/TcpAcceptor.cpp src/main.cpp include/mabiphmo/portServer/main.h)
+target_include_directories(portServer PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}> PUBLIC ${Boost_INCLUDE_DIR})
 
-find_package(Boost REQUIRED)
-include_directories(${Boost_INCLUDE_DIR})
-target_link_libraries(portServer ${BOOST_LIB_DIR})
+target_link_libraries(portServer PUBLIC ${PROJECT_NAME}::iocServer)
 
-find_library(iocServer REQUIRED)
-target_link_libraries(portServer ${iocServer_LIB_DIR})
+add_library(${PROJECT_NAME}::portServer ALIAS portServer)
 
 add_subdirectory(test)
+
+include(GNUInstallDirs)
+install(TARGETS portServer
+        EXPORT ${PROJECT_NAME}Targets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}
+)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/mabiphmo TYPE INCLUDE)

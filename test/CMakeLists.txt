@@ -1,8 +1,5 @@
-set (Boost_USE_STATIC_LIBS OFF)
-find_package (Boost REQUIRED COMPONENTS unit_test_framework)
-include_directories (${Boost_INCLUDE_DIRS})
-
 # 'Boost_Tests_run' is the target name
 # 'test1.cpp tests2.cpp' are source files with tests
-add_executable (Boost_Tests_run test1.cpp ../src/construction/AppBuilder.cpp ../src/construction/AppBuilder.h ../include/mabiphmo/portServer/handler/ITcpHandler.h ../src/TcpAcceptor.h ../src/TcpAcceptor.cpp)
-target_link_libraries (Boost_Tests_run ${Boost_LIBRARIES})
+add_executable (portServerTests test1.cpp)
+target_link_libraries (portServerTests PRIVATE ${Boost_LIBRARIES} ${PROJECT_NAME}::portServer)
+target_include_directories(portServerTests PRIVATE ${Boost_INCLUDE_DIRS})

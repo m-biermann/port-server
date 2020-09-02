@@ -15,7 +15,7 @@ namespace mabiphmo::portServer::construction {
 		iocServer::construction::IAppBuilder &BaseBuilder() override;
 	public:
 		explicit AppBuilder(iocServer::construction::IAppBuilder &baseBuilder);
-		IAppBuilder &WithTcpHandler(iocServer::construction::IAppBuilder::IServiceArg<std::shared_ptr<handler::ITcpHandler>> &&handlerFactory, boost::asio::ip::tcp::endpoint &&endpoint) override;
+		IAppBuilder &WithTcpHandler(std::unique_ptr<iocServer::construction::IServiceArg<std::shared_ptr<handler::ITcpHandler>>> &&handlerFactory, boost::asio::ip::tcp::endpoint &&endpoint) override;
 	};
 }
 

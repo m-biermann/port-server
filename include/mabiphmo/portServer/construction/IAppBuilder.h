@@ -14,7 +14,7 @@
 namespace mabiphmo::portServer::construction {
 	class IAppBuilder {
 	public:
-		virtual IAppBuilder &WithTcpHandler(iocServer::construction::IAppBuilder::IServiceArg<std::shared_ptr<handler::ITcpHandler>> &&handlerFactory, boost::asio::ip::tcp::endpoint &&endpoint) = 0;
+		virtual IAppBuilder &WithTcpHandler(std::unique_ptr<iocServer::construction::IServiceArg<std::shared_ptr<handler::ITcpHandler>>> &&handlerFactory, boost::asio::ip::tcp::endpoint &&endpoint) = 0;
 
 		virtual iocServer::construction::IAppBuilder &BaseBuilder() = 0;
 	};
