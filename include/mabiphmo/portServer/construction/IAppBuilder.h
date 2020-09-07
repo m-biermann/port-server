@@ -2,8 +2,8 @@
 // Created by max on 8/17/20.
 //
 
-#ifndef HTTPSERVER_IAPPBUILDER_H
-#define HTTPSERVER_IAPPBUILDER_H
+#ifndef PORTSERVER_IAPPBUILDER_H
+#define PORTSERVER_IAPPBUILDER_H
 
 #include <utility>
 #include <mabiphmo/iocServer/construction/IAppBuilder.h>
@@ -20,4 +20,4 @@ namespace mabiphmo::portServer::construction {
 	};
 }
 
-#endif //HTTPSERVER_IAPPBUILDER_H
+#endif //PORTSERVER_IAPPBUILDER_H
