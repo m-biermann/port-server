@@ -32,6 +32,8 @@ if(NOT DEFINED PACKAGE_NAME)
     find_package(ioc-server REQUIRED)
 endif()
 
+find_package(Boost REQUIRED)
+
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 

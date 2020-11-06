@@ -4,33 +4,46 @@
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
-#include <mabiphmo/iocServer/construction/ServiceArgValue.h>
 #include "AppBuilder.h"
 #include "../TcpAcceptor.h"
 
-using namespace mabiphmo::iocServer::construction;
+using namespace mabiphmo::ioc_server::construction;
 
 namespace mabiphmo::portServer::construction {
-	iocServer::construction::IAppBuilder &AppBuilder::BaseBuilder()
+	ioc_server::construction::IAppBuilder &AppBuilder::BaseBuilder()
 	{
 		return baseBuilder_;
 	}
 
-	AppBuilder::AppBuilder(iocServer::construction::IAppBuilder &baseBuilder)
+	AppBuilder::AppBuilder(ioc_server::construction::IAppBuilder &baseBuilder)
 		: baseBuilder_(baseBuilder)
 	{
-		baseBuilder_.WithFactory<TcpAcceptor, std::tuple<std::shared_ptr<handler::ITcpHandler>, boost::asio::ip::tcp::endpoint &&>, std::tuple<boost::asio::io_context>>();
+		baseBuilder_.IoCContainer().RegisterType(
+			ioc_container::TypeHolder<TcpAcceptor>(
+				ioc_container::Scope::Factory,
+				std::function<std::shared_ptr<TcpAcceptor>(std::shared_ptr<handler::ITcpHandler>, boost::asio::ip::tcp::endpoint &&)>(
+					[&ioc = baseBuilder_.IoCContainer()](
+						const std::shared_ptr<handler::ITcpHandler>& handler,
+				        boost::asio::ip::tcp::endpoint &&endpoint)
+					{
+						return std::make_shared<TcpAcceptor>(
+							ioc.GetTypeHolder<boost::asio::io_context>()->Get(),
+							handler, std::move(endpoint));
+					})));
 	}
 
 	IAppBuilder &AppBuilder::WithTcpHandler(
-			std::unique_ptr<iocServer::construction::IServiceArg<std::shared_ptr<handler::ITcpHandler>>> &&handlerFactory,
+			std::function<std::shared_ptr<handler::ITcpHandler>()> &&handlerFactory,
 			boost::asio::ip::tcp::endpoint &&endpoint) {
 		baseBuilder_.WithStartableService(
-			baseBuilder_.ServiceArgBaseRelationFactory<iocServer::service::IStartableService, TcpAcceptor>(
-				std::move(handlerFactory),
-				std::unique_ptr<IServiceArg<boost::asio::ip::tcp::endpoint &&>>(
-					new ServiceArgValue<boost::asio::ip::tcp::endpoint &&>(
-						std::move(endpoint)))));
+			[endpoint = std::move(endpoint),
+				handler = std::move(handlerFactory),
+				parametrizedFactory = baseBuilder_.IoCContainer().GetTypeHolder<TcpAcceptor>()->
+					GetFactory<std::shared_ptr<handler::ITcpHandler>,
+					boost::asio::ip::tcp::endpoint &&>()]() mutable
+			{
+				return std::dynamic_pointer_cast<ioc_server::service::IStartableService>((*parametrizedFactory)(handler(), std::move(endpoint)));
+			});
 		return *this;
 	}
 }
