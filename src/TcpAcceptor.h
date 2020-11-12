@@ -21,7 +21,7 @@ namespace mabiphmo::portServer {
 		AcceptorException() : AcceptorException("") {}
 	};
 
-	class TcpAcceptor : public ioc_server::service::IStartableService, std::enable_shared_from_this<TcpAcceptor>
+	class TcpAcceptor : public ioc_server::service::IStartableService, public std::enable_shared_from_this<TcpAcceptor>
 	{
 		std::shared_ptr<boost::asio::io_context> ioContext_;
 		std::shared_ptr<handler::ITcpHandler> handler_;
