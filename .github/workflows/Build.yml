@@ -38,22 +38,27 @@ jobs:
       id: vars
       shell: bash
       run: |
+        boost_loc="$HOME${{ matrix.path-delimiter }}boost_out"
+        libs_loc="${{runner.workspace}}${{ matrix.path-delimiter }}libs"
         if [ ${{matrix.os}} = "windows-latest" ]; then
-          boost_loc="$HOME${{ matrix.path-delimiter }}boost_out"
-          echo "boost_loc pre: $boost_loc"
-          boost_loc="C:/Boost"
-          echo "boost_loc post: $boost_loc"
           gcc_loc="$(where gcc)"
-          gcc_loc="${gcc_loc//\\//}"
           gxx_loc="$(where g++)"
-          gxx_loc="${gxx_loc//\\//}"
         elif [ ${{matrix.os}} = "ubuntu-latest" ]; then
-          boost_loc="${{runner.workspace}}${{ matrix.path-delimiter }}boost_out"
           gcc_loc="$(which gcc)"
           gxx_loc="$(which g++)"
         fi
+        
+        if [ ${{matrix.os}} = "windows-latest" ]; then
+          boost_loc="${boost_loc//\\//}"
+          libs_loc="${libs_loc//\\//}"
+          gcc_loc="${gcc_loc//\\//}"
+          gxx_loc="${gxx_loc//\\//}"
+        fi
+        
         echo "boost_loc: $boost_loc"
         echo "::set-output name=BOOST_DIR::$boost_loc"
+        echo "libs_loc: $libs_loc"
+        echo "::set-output name=LIBS_DIR::$libs_loc"
         echo "gcc_loc: $gcc_loc"
         echo "::set-output name=GCC_PATH::$gcc_loc"
         echo "gxx_loc: $gxx_loc"
