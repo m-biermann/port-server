@@ -132,7 +132,7 @@ jobs:
       id: vars
       shell: bash
       run: |
-        boost_loc="${{runner.workspace}}${{ matrix.path-delimiter }}boost_out"
+        boost_loc="$HOME${{ matrix.path-delimiter }}boost_out"
         libs_loc="${{runner.workspace}}${{ matrix.path-delimiter }}libs"
         if [ ${{matrix.os}} = "windows-latest" ]; then
           gcc_loc="$(where gcc)"
