@@ -189,7 +189,7 @@ jobs:
     - name: Download ioc-server Build.zip
       uses: robinraju/release-downloader@v1
       with:
-        tag: v0.1.0-alpha
+        tag: v0.1.1-alpha
         fileName: Build.zip
         repository: m-biermann/ioc-server
         out-file-path: ${{runner.workspace}}
